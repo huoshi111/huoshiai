@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>火狮 小型AI助手</title>
+
+</head>
+<body>
+<h1 style="color: #b4b4b4;">火狮智能助手</h1>
+<br><br>
+<div class="chat-container">
+    <div class="chat-box" id="chat-box">
+        <p class="ai-message"><b>火狮智能助手：</b> 有什么可以帮忙的吗？</p>
+    </div>
+    
+    <!-- 快捷按钮 -->
+    <div class="button-container" id="button-container">
+        <button onclick="quickReply(this, '介绍一下你自己')">介绍</button>
+        <button onclick="quickReply(this, '推荐')">推荐</button>
+        <button onclick="quickReply(this, '我需要帮助')">帮助</button>
+        <button onclick="quickReply(this, '为什么怎么难')">遇到困难</button>
+        <button onclick="quickReply(this, '我需要联系开发者')">联系</button>
+        <button onclick="quickReply(this, '如何反击网络上的键盘侠')">反击键盘侠</button> 
+        <button onclick="quickReply(this, '如何让攻击者破防')">让攻击者破防</button>
+        <button onclick="quickReply(this, '如何反击喷子')">文化反击战术</button>
+    </div>
+
+    <div class="input-container">
+        <input type="text" id="user-input" placeholder="请输入...">
+        <button onclick="sendMessage()">发送</button>
+    </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
