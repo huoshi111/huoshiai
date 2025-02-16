@@ -1080,48 +1080,67 @@ let isTyping = false; // 添加一个标志变量，用于标记AI是否正在�
         scrollToBottom();
     }
     
-    function typeMessage(sender, text, className) {
-        isTyping = true; // 标记AI开始回复
-        disableInputAndButton(); // 禁用输入框和发送按钮
-    
-        const p = document.createElement("p");
-        p.className = className;
-        p.innerHTML = `<b>${sender}：</b> <span class="typing-text"></span><span class="typing-dot">◉</span>`;
-        chatBox.appendChild(p);
-        scrollToBottom();
-    
-        const typingDot = p.querySelector(".typing-dot");
-        const typingText = p.querySelector(".typing-text");
-    
-        let scale = 1;
-        let growing = true;
-        const animateTyping = setInterval(() => {
-            scale = growing ? scale + 0.1 : scale - 0.1;
-            if (scale >= 1.5) growing = false;
-            if (scale <= 1) growing = true;
-            typingDot.style.transform = `scale(${scale})`;
-        }, 100);
-    
-        setTimeout(() => {
-            clearInterval(animateTyping);
-            typingDot.style.transform = "scale(1)";
-            typingDot.style.animation = "none";
-    
-            let index = 0;
-            const typeInterval = setInterval(() => {
-                if (index < text.length) {
-                    typingText.innerHTML += text[index];
-                    index++;
-                } else {
-                    clearInterval(typeInterval);
-                    typingDot.remove();
-                    isTyping = false; // 标记AI回复完毕
-                    enableInputAndButton(); // 启用输入框和发送按钮
-                }
-                scrollToBottom();
-            }, 50);
-        }, 4000);
+// 震动状态变量
+let isVibrationEnabled = false;
+
+// 切换震动模式
+function toggleVibration() {
+    isVibrationEnabled = !isVibrationEnabled; // 切换状态
+    const vibrateButton = document.getElementById("vibrate-button");
+
+    if (isVibrationEnabled) {
+        vibrateButton.textContent = "关闭震动"; // 更新按钮文本为“关闭震动”
+    } else {
+        vibrateButton.textContent = "开启震动"; // 更新按钮文本为“开启震动”
     }
+}
+
+// 震动函数
+function vibrate() {
+    if (isVibrationEnabled && navigator.vibrate) {
+        navigator.vibrate(200); // 震动200毫秒
+    }
+}
+
+// AI开始回复时触发震动
+function typeMessage(sender, text, className) {
+    const p = document.createElement("p");
+    p.className = className;
+    p.innerHTML = `<b>${sender}：</b> <span class="typing-text"></span><span class="typing-dot">◉</span>`;
+    chatBox.appendChild(p);
+    scrollToBottom();
+
+    const typingDot = p.querySelector(".typing-dot");
+    const typingText = p.querySelector(".typing-text");
+
+    let scale = 1;
+    let growing = true;
+    const animateTyping = setInterval(() => {
+        scale = growing ? scale + 0.1 : scale - 0.1;
+        if (scale >= 1.5) growing = false;
+        if (scale <= 1) growing = true;
+        typingDot.style.transform = `scale(${scale})`;
+    }, 100);
+
+    setTimeout(() => {
+        clearInterval(animateTyping);
+        typingDot.style.transform = "scale(1)";
+        typingDot.style.animation = "none";
+
+        let index = 0;
+        const typeInterval = setInterval(() => {
+            if (index < text.length) {
+                typingText.innerHTML += text[index];
+                index++;
+            } else {
+                clearInterval(typeInterval);
+                typingDot.remove();
+                vibrate(); // AI回复完成时触发震动
+            }
+            scrollToBottom();
+        }, 50);
+    }, 4000);
+}
     
     function scrollToBottom() {
         chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: "smooth" });
@@ -1174,3 +1193,41 @@ let isTyping = false; // 添加一个标志变量，用于标记AI是否正在�
             return "抱歉，这个数学表达式无法计算, 你只需要写数学表达式，不要添加任何文字哦。";
         }
     }
+
+
+
+
+    function speakMessage() {
+      const aiMessage = document.querySelector(".ai-message:last-child");
+      if (!aiMessage) return;
+  
+      const text = aiMessage.textContent.replace("火狮智能助手：", "").trim();
+      if (!text) return;
+  
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "zh-CN";
+      utterance.rate = 1.3;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+  
+      // 先清空之前的语音，防止冲突
+      window.speechSynthesis.cancel();
+      setTimeout(() => {
+          window.speechSynthesis.speak(utterance);
+      }, 100); // 适当延迟，防止 cancel() 导致播放失败
+  
+      document.getElementById("stop-voice-button").style.display = "inline-block";
+      document.getElementById("speak-button").style.display = "none";
+  
+      utterance.onend = function () {
+          document.getElementById("stop-voice-button").style.display = "none";
+          document.getElementById("speak-button").style.display = "inline-block";
+      };
+  
+      utterance.onerror = function (event) {
+          console.error("语音播放发生错误：", event);
+          document.getElementById("stop-voice-button").style.display = "none";
+          document.getElementById("speak-button").style.display = "inline-block";
+      };
+  }
+  
