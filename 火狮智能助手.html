@@ -31,6 +31,9 @@
     <div class="input-container">
         <input type="text" id="user-input" placeholder="请输入...">
         <button onclick="sendMessage()">发送</button>
+        <button id="speak-button" onclick="speakMessage()">语音</button>
+        <button id="stop-voice-button" onclick="stopSpeaking()" style="display: none;">停止语音</button>
+        <button id="vibrate-button" onclick="toggleVibration()">开启震动</button>
     </div>
 </div>
 <script src="script.js"></script>
