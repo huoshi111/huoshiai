@@ -1214,27 +1214,53 @@ let isTyping = false; // 添加一个标志变量，用于标记AI是否正在�
     }
     
     // 改进后的 isMathExpression 函数
-    function isMathExpression(message) {
-        // 去除空格并检查是否包含运算符
-        message = message.trim();
-        return /[+\-*/^()]/.test(message) && /\d/.test(message);
-    }
-    
-    // 计算数学表达式
-    function calculateMath(expression) {
-        try {
-            expression = expression.split('=')[0].trim();
-            expression = expression.replace(/×/g, "*").replace(/÷/g, "/");
-            if (!/^[0-9+\-*/^().%=\s]+$/.test(expression)) {
-                throw new Error("Invalid characters in expression.");
-            }
-            expression = expression.replace(/%/g, "/100");
-            const result = eval(expression);
-            return result;
-        } catch (error) {
-            return "抱歉，这个数学表达式无法计算, 你只需要写数学表达式，不要添加任何文字哦。";
-        }
-    }
+// 检查是否为数学表达式
+function isMathExpression(message) {
+  message = message.trim();
+  return /[+\-*/^()=]/.test(message) || /加|减|乘|除|÷|×|·|%/.test(message);
+}
+
+function calculateMath(expression) {
+  try {
+      // 清理表达式，替换中文符号
+      let cleanedExpression = expression
+          .replace(/加/g, '+')
+          .replace(/减/g, '-')
+          .replace(/乘/g, '*')
+          .replace(/除/g, '/')
+          .replace(/÷/g, '/')
+          .replace(/×/g, '*')
+          .replace(/·/g, '*');
+
+      // 移除所有非数字和运算符的字符
+      cleanedExpression = cleanedExpression.replace(/[^0-9+\-*/().%]/g, '');
+
+      // **处理括号内的多个百分比相加或相减**
+      cleanedExpression = cleanedExpression.replace(/\(([\d+\-*/\s%]+)\)/g, (match, innerExpr) => {
+          // 计算括号内的值（带百分号的合并）
+          let evaluatedInner = innerExpr.replace(/(\d+)%/g, (m, p1) => `${p1}`);
+          let sum = eval(evaluatedInner); // 计算括号内部的数值
+          return `(${sum} / 100 * 100)`; // 让它正确作用到100
+      });
+
+      // **处理减法中的百分比**（如 100 - 50%）
+      cleanedExpression = cleanedExpression.replace(/(\d+)\s*-\s*(\d+)%/g, (match, p1, p2) => {
+          return `${p1} - (${p1} * ${p2} / 100)`; 
+      });
+
+      // **处理剩余的百分比转换**
+      cleanedExpression = cleanedExpression.replace(/(\d+)%/g, (match, p1) => {
+          return `(${p1} / 100)`;
+      });
+
+      // 计算表达式
+      const result = eval(cleanedExpression);
+      return result;
+  } catch (error) {
+      return "抱歉，这个数学表达式无法计算，请确保表达式正确且只包含数字和运算符。";
+  }
+}
+
 
 
     function speakMessage() {
