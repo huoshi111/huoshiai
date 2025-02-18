@@ -49,12 +49,12 @@
         .user-message {
             background: #88d3c9;
             color: rgb(38, 38, 38);
-            text-align: right;
+            text-align: left;
             align-self: flex-end;
         }
         .ai-message {
             background: #323232;
-            color: rgb(222, 222, 222);
+            color: rgb(180, 180, 180);
             text-align: left;
             align-self: flex-start;
         }
@@ -65,8 +65,8 @@
     margin-right: 5px;
     background-color: transparent; /* 设置为透明背景 */
     border-radius: 50%;
-    animation: scaleAnimation 2s infinite;
-    color: #88d3c9; /* 设置符号颜色为绿色 */
+    animation: scaleAnimation 1.2s infinite;
+    color: #b0b0b0f9; /* 设置符号颜色为绿色 */
     font-size: 20px; /* 设置符号大小 */
     line-height: 20px; /* 调整行高以对齐 */
     text-align: center; /* 居中对齐符号 */
