@@ -13,13 +13,16 @@
 <br><br>
 <div class="chat-container">
     <div class="chat-box" id="chat-box">
-        <p class="ai-message"><b>火狮智能助手：</b> 有什么可以帮忙的吗？</p>
+        <p class="ai-message"><b>火狮智能助手：</b> 有什么可以帮忙的吗？ ヾ(^▽^*)</p>
     </div>
-    
+
+
     <!-- 快捷按钮 -->
+    <button id="toggle-button" onclick="toggleButtons()">隐藏内容</button>
     <div class="button-container" id="button-container">
+        <h style="color: white;">您可能对这些话题感兴趣: </h>
+        <button style="background-color: #202020c3; color: white;" onclick="quickReply(this, '开启搜索功能')">搜索功能</button>
         <button onclick="quickReply(this, '介绍一下你自己')">介绍</button>
-        <button onclick="quickReply(this, '开启搜索功能')">搜索功能</button>
         <button onclick="quickReply(this, '推荐')">推荐</button>
         <button onclick="quickReply(this, '我需要帮助')">帮助</button>
         <button onclick="quickReply(this, '为什么怎么难')">遇到困难</button>
