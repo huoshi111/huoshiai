@@ -1635,3 +1635,87 @@ function calculateMath(expression) {
       return "抱歉，这个数学表达式无法计算，请确保表达式正确且只包含数字和运算符。";
   }
 }
+
+
+
+
+// 搜索功能 
+
+let searchEnabled = false; // 是否启用搜索模式
+let searchFrame = null; // 用于存储搜索窗口
+
+function sendMessage() {
+    if (isTyping || sendMessageCalled) return;
+    sendMessageCalled = true;
+    setTimeout(() => { sendMessageCalled = false; }, 500);
+
+    const message = userInput.value.trim();
+    if (message === "") return;
+
+    addMessage("你", message, "user-message");
+
+    // 开启搜索功能
+    if (message === "开启搜索功能") {
+        searchEnabled = true;
+        typeMessage("火狮智能助手", "搜索功能已开启，请输入搜索内容。___________________________________________________________________提示：如果您要关闭搜索功能可以直接输入 关闭搜索功能", "ai-message");
+        userInput.value = "";
+        return;
+    }
+
+    // 关闭搜索功能
+    if (message === "关闭搜索功能") {
+        searchEnabled = false;
+        if (searchFrame) {
+            searchFrame.remove(); // 移除嵌入的 Bing 结果
+            searchFrame = null;
+        }
+        typeMessage("火狮智能助手", "搜索功能已关闭，恢复聊天模式。", "ai-message");
+        userInput.value = "";
+        return;
+    }
+
+    // 在搜索模式下进行搜索
+    if (searchEnabled) {
+        typeMessage("火狮智能助手", "正在搜索，请稍候...  以下是搜索结果", "ai-message");
+
+        // 删除之前的搜索窗口
+        if (searchFrame) {
+            searchFrame.remove();
+        }
+
+        // 创建一个 iframe 作为搜索窗口
+        searchFrame = document.createElement("iframe");
+        searchFrame.src = `https://www.bing.com/search?q=${encodeURIComponent(message)}`;
+        searchFrame.style.width = "100%";
+        searchFrame.style.height = "400px";
+        searchFrame.style.border = "none";
+        searchFrame.style.borderRadius = "8px";
+        searchFrame.style.marginTop = "10px";
+        searchFrame.style.paddingTop = "50px"; // 增加上方间距
+
+
+        // 等待 AI 回复完成后插入 iframe
+        setTimeout(() => {
+            chatBox.appendChild(searchFrame);
+            scrollToBottom(); // 滚动到底部
+        }, 1000);
+
+        userInput.value = "";
+        return;
+    }
+
+    // **其他正常聊天逻辑**
+    const keywordResponse = checkKeywordMatch(message);
+    if (keywordResponse) {
+        typeMessage("火狮智能助手", keywordResponse, "ai-message");
+    } else if (isMathExpression(message)) {
+        const result = calculateMath(message);
+        typeMessage("火狮智能助手", result.toString(), "ai-message");
+    } else {
+        let response = getResponse(message);
+        typeMessage("火狮智能助手", response, "ai-message");
+    }
+
+    userInput.value = "";
+}
+
